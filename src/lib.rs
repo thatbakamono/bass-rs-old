@@ -57,8 +57,6 @@ impl Stream {
             let file_name_raw = file_name_raw.into_raw() as *const c_void;
 
             handle = BASS_StreamCreateFile(0, file_name_raw, 0, 0, BASS_UNICODE);
-
-            unsafe { U16CString::from_raw(file_name_raw as *mut u16) };
         }
 
         #[cfg(target_family = "unix")]
@@ -67,8 +65,6 @@ impl Stream {
             let file_name_raw = file_name_raw.as_ptr() as *const c_void;
 
             handle = BASS_StreamCreateFile(0, file_name_raw, 0, 0, 0);
-
-            unsafe { CString::from_raw(file_name_raw as *mut i8) };
         }
         
         if handle == 0 {
