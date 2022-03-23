@@ -3,6 +3,9 @@ use std::ffi::{CString, c_void};
 use bass_sys::*;
 use thiserror::Error;
 
+#[cfg(target_os = "windows")]
+use widestring::U16CString;
+
 #[derive(Error, Debug)]
 pub enum BassError {
     #[error("The output is paused or stopped.")]
