@@ -1,4 +1,7 @@
-use std::ffi::{CString, c_void};
+#[cfg(target_family = "unix")]
+use std::ffi::CString;
+
+use std::ffi::c_void;
 
 use bass_sys::*;
 use thiserror::Error;
@@ -69,7 +72,7 @@ impl Stream {
 
             handle = BASS_StreamCreateFile(0, file_name_raw, 0, 0, 0);
         }
-        
+
         if handle == 0 {
             let error_code = BASS_ErrorGetCode();
 
@@ -80,13 +83,14 @@ impl Stream {
                 BASS_ERROR_CODEC => return Err(BassError::InvalidCodec),
                 BASS_ERROR_FORMAT => return Err(BassError::InvalidSampleFormat),
                 BASS_ERROR_MEM => return Err(BassError::InsufficientMemory),
-                _ => panic!("Failed to create the stream, error code: {}", BASS_ErrorGetCode()),
+                _ => panic!(
+                    "Failed to create the stream, error code: {}",
+                    BASS_ErrorGetCode()
+                ),
             }
         }
 
-        Ok(Stream {
-            handle
-        })
+        Ok(Stream { handle })
     }
 
     pub fn create_from_url(url: String) -> Result<Stream, BassError> {
@@ -127,16 +131,17 @@ impl Stream {
                 BASS_ERROR_CODEC => return Err(BassError::InvalidCodec),
                 BASS_ERROR_FORMAT => return Err(BassError::InvalidSampleFormat),
                 BASS_ERROR_MEM => return Err(BassError::InsufficientMemory),
-                _ => panic!("Failed to create the stream, error code: {}", BASS_ErrorGetCode()),
+                _ => panic!(
+                    "Failed to create the stream, error code: {}",
+                    BASS_ErrorGetCode()
+                ),
             }
         }
 
-        Ok(Stream {
-            handle
-        })
+        Ok(Stream { handle })
     }
 
-    pub fn play(&self) -> Result<(), BassError>  {
+    pub fn play(&self) -> Result<(), BassError> {
         if BASS_ChannelPlay(self.handle, 0) == 0 {
             let error_code = BASS_ErrorGetCode();
 
@@ -164,7 +169,10 @@ impl Stream {
 
     pub fn stop(&self) -> Result<(), BassError> {
         if BASS_ChannelStop(self.handle) == 0 {
-            panic!("Failed to stop the stream, error code: {}", BASS_ErrorGetCode());
+            panic!(
+                "Failed to stop the stream, error code: {}",
+                BASS_ErrorGetCode()
+            );
         }
 
         Ok(())
@@ -172,13 +180,19 @@ impl Stream {
 
     pub fn lock(&self) {
         if BASS_ChannelLock(self.handle, 1) == 0 {
-            panic!("Failed to lock the stream, error code: {}", BASS_ErrorGetCode());
+            panic!(
+                "Failed to lock the stream, error code: {}",
+                BASS_ErrorGetCode()
+            );
         }
     }
 
     pub fn unlock(&self) {
         if BASS_ChannelLock(self.handle, 0) == 0 {
-            panic!("Failed to unlock the stream, error code: {}", BASS_ErrorGetCode());
+            panic!(
+                "Failed to unlock the stream, error code: {}",
+                BASS_ErrorGetCode()
+            );
         }
     }
 
@@ -193,7 +207,11 @@ impl Stream {
     pub fn get_buffering_length(&self) -> f32 {
         let mut buffering_length = 0.0f32;
 
-        BASS_ChannelGetAttribute(self.handle, BASS_ATTRIB_BUFFER, &mut buffering_length as *mut f32);
+        BASS_ChannelGetAttribute(
+            self.handle,
+            BASS_ATTRIB_BUFFER,
+            &mut buffering_length as *mut f32,
+        );
 
         buffering_length
     }
@@ -209,7 +227,11 @@ impl Stream {
     pub fn get_processing_granularity(&self) -> f32 {
         let mut processing_granularity = 0.0f32;
 
-        BASS_ChannelGetAttribute(self.handle, BASS_ATTRIB_GRANULE, &mut processing_granularity as *mut f32);
+        BASS_ChannelGetAttribute(
+            self.handle,
+            BASS_ATTRIB_GRANULE,
+            &mut processing_granularity as *mut f32,
+        );
 
         processing_granularity
     }
@@ -217,7 +239,11 @@ impl Stream {
     pub fn get_buffer_level_required_to_resume_stalled_playback(&self) -> f32 {
         let mut buffer_level_required_to_resume_stalled_playback = 0.0f32;
 
-        BASS_ChannelGetAttribute(self.handle, BASS_ATTRIB_NET_RESUME, &mut buffer_level_required_to_resume_stalled_playback as *mut f32);
+        BASS_ChannelGetAttribute(
+            self.handle,
+            BASS_ATTRIB_NET_RESUME,
+            &mut buffer_level_required_to_resume_stalled_playback as *mut f32,
+        );
 
         buffer_level_required_to_resume_stalled_playback
     }
@@ -225,7 +251,11 @@ impl Stream {
     pub fn get_playback_buffering_switch(&self) -> f32 {
         let mut playback_buffering_switch = 0.0f32;
 
-        BASS_ChannelGetAttribute(self.handle, BASS_ATTRIB_NOBUFFER, &mut playback_buffering_switch as *mut f32);
+        BASS_ChannelGetAttribute(
+            self.handle,
+            BASS_ATTRIB_NOBUFFER,
+            &mut playback_buffering_switch as *mut f32,
+        );
 
         playback_buffering_switch
     }
@@ -233,7 +263,11 @@ impl Stream {
     pub fn get_playback_ramping_switch(&self) -> f32 {
         let mut playback_ramping_switch = 0.0f32;
 
-        BASS_ChannelGetAttribute(self.handle, BASS_ATTRIB_NORAMP, &mut playback_ramping_switch as *mut f32);
+        BASS_ChannelGetAttribute(
+            self.handle,
+            BASS_ATTRIB_NORAMP,
+            &mut playback_ramping_switch as *mut f32,
+        );
 
         playback_ramping_switch
     }
@@ -241,7 +275,11 @@ impl Stream {
     pub fn get_panning_position(&self) -> f32 {
         let mut panning_position = 0.0f32;
 
-        BASS_ChannelGetAttribute(self.handle, BASS_ATTRIB_PAN, &mut panning_position as *mut f32);
+        BASS_ChannelGetAttribute(
+            self.handle,
+            BASS_ATTRIB_PAN,
+            &mut panning_position as *mut f32,
+        );
 
         panning_position
     }
@@ -249,7 +287,11 @@ impl Stream {
     pub fn get_sample_rate_conversion_quality(&self) -> f32 {
         let mut sample_rate_conversion_quality = 0.0f32;
 
-        BASS_ChannelGetAttribute(self.handle, BASS_ATTRIB_SRC, &mut sample_rate_conversion_quality as *mut f32);
+        BASS_ChannelGetAttribute(
+            self.handle,
+            BASS_ATTRIB_SRC,
+            &mut sample_rate_conversion_quality as *mut f32,
+        );
 
         sample_rate_conversion_quality
     }
