@@ -11,4 +11,4 @@ bass-sys = "2.2.0"
 thiserror = "1.0.29"
 
 [target.'cfg(target_os = "windows")'.dependencies]
-widestring = "0.4.3"
+widestring = "1.0.1"
