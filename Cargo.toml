@@ -7,7 +7,7 @@ edition = "2018"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-bass-sys = "2.2.0"
+bass-sys = "2.2.2"
 thiserror = "1.0.34"
 
 [target.'cfg(target_os = "windows")'.dependencies]
