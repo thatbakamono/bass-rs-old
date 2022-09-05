@@ -8,7 +8,7 @@ edition = "2018"
 
 [dependencies]
 bass-sys = "2.2.0"
-thiserror = "1.0.29"
+thiserror = "1.0.34"
 
 [target.'cfg(target_os = "windows")'.dependencies]
 widestring = "1.0.2"
